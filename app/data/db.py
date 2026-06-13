@@ -24,7 +24,13 @@ def init_database() -> None:
 
             for i in range (10):
                 event = Event(title=f.sentence(nb_words=10), description=f.sentence(nb_words=20),date=f.date_time_this_year(), location=f.sentence(nb_words=10))
+                session.add(event)
+            session.commit()
 
+            for i in range(10):
+                user = User(username=f.user_name(),name=f.name(),email=f.email())
+                session.add(user)
+            session.commit()
 
 def get_session():
     with Session(engine) as session:
