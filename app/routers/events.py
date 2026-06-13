@@ -19,6 +19,14 @@ def get_event(session : SessionDep, id: Annotated[int, Path(description="event i
     except:
         raise HTTPException(status_code=404, detail="Event not found")
 
+
+@router.put("/{id}")
+def update(event: Event):
+    if event.id not in events:
+        raise HTTPException(403, detail="No event found!")
+    events[event.id] = event
+    
+    
 @router.post("/")
 def add_event(session: SessionDep, event: EventCreate):
     """Endpoint to add a new event"""
@@ -26,7 +34,6 @@ def add_event(session: SessionDep, event: EventCreate):
     database_event = Event.model_validate(event)
     session.add(database_event)
     session.commit()
-    
     session.refresh(database_event)
     
     return "Event successfully added"
@@ -37,3 +44,4 @@ def delete_all(session: SessionDep):
     session.exec(delete(Event))
     session.commit()
     return "All events successfully deleted"
+
