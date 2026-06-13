@@ -20,9 +20,10 @@ def get_event(session : SessionDep, id: Annotated[int, Path(description="event i
     return session
 
 @router.put("/{id}")
-def update(event: Event):
+def update(session : SessionDep, event: EventCreate):
+    events = session.exec(select(Event)).all()
     if event.id not in events:
-        raise HTTPException(403, detail="No event found!")
+        raise HTTPException(404, detail="No event found!")
     events[event.id] = event
     
     
@@ -44,3 +45,11 @@ def delete_all(session: SessionDep):
     session.commit()
     return "All events successfully deleted"
 
+@router.delete("/{id}")
+def delete_single(session: SessionDep, id: Annotated[int, Path(description="Id that should be deleted")]):
+    event = session.get(Event, id)
+    if not event:
+        raise HTTPException(404, detail="Event non trovato")
+    session.delete(Event[id])
+    session.commit()
+    return f"Event {id} deleted!"
