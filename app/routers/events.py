@@ -11,6 +11,13 @@ def get_all_events(session: SessionDep):
     events = session.exec(select(Event)).all()
     return events
 
+@router.get("/{id}")
+def get_event(session : SessionDep, id: Annotated[int, Path(description="event id to obtain")]):
+    try:
+        return session.get(Event, id)
+    except:
+        raise HTTPException(status_code=404, detail="Event not found")
+
 @router.post("/")
 def add_event(session: SessionDep, event: EventCreate):
     """Endpoint to add a new event"""
