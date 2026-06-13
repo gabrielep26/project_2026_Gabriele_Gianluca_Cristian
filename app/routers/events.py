@@ -14,11 +14,10 @@ def get_all_events(session: SessionDep):
 
 @router.get("/{id}")
 def get_event(session : SessionDep, id: Annotated[int, Path(description="event id to obtain")]):
-    try:
-        return session.get(Event, id)
-    except:
+    session = session.get(Event, id)
+    if not session:
         raise HTTPException(status_code=404, detail="Event not found")
-
+    return session
 
 @router.put("/{id}")
 def update(event: Event):
