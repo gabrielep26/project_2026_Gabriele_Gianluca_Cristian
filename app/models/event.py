@@ -5,7 +5,7 @@ from sqlmodel import SQLModel, Field
 class EventBase(SQLModel):
     title: str
     description: str
-    date: str  # or datetime
+    date: datetime
     location: str
 
 

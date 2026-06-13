@@ -4,6 +4,7 @@ from fastapi import Depends
 import os
 from faker import Faker
 from app.config import config
+import random
 
 from app.models.registration import Registration  # NOQA
 from app.models.event import Event
@@ -31,6 +32,34 @@ def init_database() -> None:
                 user = User(username=f.user_name(),name=f.name(),email=f.email())
                 session.add(user)
             session.commit()
+
+            #Now we are linking the events and users
+
+            #Selects all the users and events created with faker
+            users = session.exec(select(user)).all()
+            events = session.exec(select(event)).all()
+
+            #set() keeps track of unique user-event tuples of their primary keys
+            u_e_tuples = set()
+
+            #Creates 10 registrations
+            while len(u_e_tuples) < 10:
+                random_user=random.choice(users)
+                random_event=random.choice(events)
+
+                #Creates a tuple of user-event
+                u_e_tuple=(random_user.username,random_event.id)
+
+                if u_e_tuple not in u_e_tuples:
+                    u_e_tuples.add(u_e_tuple)
+
+                    #Creates the registration of the tuple
+                    registration = Registration(username=random_user.username,event_id=random_event.id)
+                    session.add(registration)
+
+            session.commit()
+
+
 
 def get_session():
     with Session(engine) as session:
