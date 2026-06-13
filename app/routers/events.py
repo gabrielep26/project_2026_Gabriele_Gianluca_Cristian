@@ -1,7 +1,8 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException, Path
 from sqlmodel import select, delete
 from app.data.db import SessionDep
 from app.models.event import Event, EventCreate
+from typing import Annotated
 
 router = APIRouter(prefix="/events")
 
