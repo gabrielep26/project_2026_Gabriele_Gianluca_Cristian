@@ -36,8 +36,8 @@ def init_database() -> None:
             #Now we are linking the events and users
 
             #Selects all the users and events created with faker
-            users = session.exec(select(user)).all()
-            events = session.exec(select(event)).all()
+            users = session.exec(select(User)).all()
+            events = session.exec(select(Event)).all()
 
             #set() keeps track of unique user-event tuples of their primary keys
             u_e_tuples = set()
@@ -58,8 +58,6 @@ def init_database() -> None:
                     session.add(registration)
 
             session.commit()
-
-
 
 def get_session():
     with Session(engine) as session:
