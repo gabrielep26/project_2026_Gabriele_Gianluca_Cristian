@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from sqlmodel import select
+from sqlmodel import select, delete
 from app.data.db import SessionDep
 from app.models.event import Event, EventCreate
 
@@ -22,3 +22,10 @@ def add_event(session: SessionDep, event: EventCreate):
     session.refresh(database_event)
     
     return "Event successfully added"
+
+@router.delete("/")
+def delete_all(session: SessionDep):
+    """Endpoint to delete all the events"""
+    session.exec(delete(Event))
+    session.commit()
+    return "All events successfully deleted"
