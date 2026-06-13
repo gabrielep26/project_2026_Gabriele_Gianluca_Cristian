@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from sqlmodel import select
 from app.data.db import SessionDep
-from app.models.event import Event
+from app.models.event import Event, EventCreate
 
 router = APIRouter(prefix="/events")
 
@@ -12,8 +12,13 @@ def get_all_events(session: SessionDep):
     return events
 
 @router.post("/")
-def add_event(session: SessionDep, event: Event):
+def add_event(session: SessionDep, event: EventCreate):
     """Endpoint to add a new event"""
-    session.add(Event.model_validate(event))
+    
+    database_event = Event.model_validate(event)
+    session.add(database_event)
     session.commit()
+    
+    session.refresh(database_event)
+    
     return "Event successfully added"
