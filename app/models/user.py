@@ -3,7 +3,7 @@ from sqlmodel import SQLModel, Field
 class User(SQLModel, table=True):
     username: str = Field(primary_key=True)
     name: str
-    #unique indica che deve essere univoco(aparte dalla primary key)
+    #unique parameter makes email a unique constraint alongside the primary key
     email: str = Field(unique=True)
 
 
