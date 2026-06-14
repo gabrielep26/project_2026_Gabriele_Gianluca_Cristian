@@ -14,6 +14,7 @@ def get_all_events(session: SessionDep):
 
 @router.get("/{id}")
 def get_event(session : SessionDep, id: Annotated[int, Path(description="event id to obtain")]):
+    """Endpoint to get an existing single event"""
     session = session.get(Event, id)
     if not session:
         raise HTTPException(status_code=404, detail="Event not found")
@@ -21,6 +22,7 @@ def get_event(session : SessionDep, id: Annotated[int, Path(description="event i
 
 @router.put("/{id}")
 def update(session : SessionDep, event: EventCreate):
+    """Endpoint to change an existing single event"""
     events = session.exec(select(Event)).all()
     if event.id not in events:
         raise HTTPException(404, detail="No event found!")
@@ -47,6 +49,7 @@ def delete_all(session: SessionDep):
 
 @router.delete("/{id}")
 def delete_single(session: SessionDep, id: Annotated[int, Path(description="Id that should be deleted")]):
+    """Endpoint to delete a single event"""
     event = session.get(Event, id)
     if not event:
         raise HTTPException(404, detail="Event non trovato")
