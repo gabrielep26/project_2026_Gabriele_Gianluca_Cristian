@@ -1,8 +1,7 @@
-from fastapi import APIRouter, HTTPException, Path
-from sqlmodel import select, delete
+from fastapi import APIRouter
+from sqlmodel import select
 from app.data.db import SessionDep
 from app.models.user import User
-from typing import Annotated, Any, Sequence
 
 router = APIRouter(prefix="/users")
 
