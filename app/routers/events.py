@@ -56,9 +56,4 @@ def delete_single(session: SessionDep, id: Annotated[int, Path(description="Id t
     session.delete(Event[id])
     session.commit()
     return f"Event {id} deleted!"
-@router.post("/")
-def add_event(session: SessionDep, event: Event):
-    """Endpoint to add a new event"""
-    session.add(Event.model_validate(event))
-    session.commit()
-    return "Event successfully added"
+
