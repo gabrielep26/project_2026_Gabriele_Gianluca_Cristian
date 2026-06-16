@@ -12,3 +12,10 @@ def get_all_users(session: SessionDep): #azione su database
     users = session.exec(select(User)).all() 
     #query: select(User) prendi da tabella User all (tutti)
     return users #fastapi converte gli oggetti python in JSON e manda al frontend
+
+@route.post("/")
+def add_user(user: User, session: SessionDep):
+    """Aggiunge un nuovo utente al database"""
+    session.add(user) #aggiungi user al database
+    session.commit() #salva modifiche
+    return "User added successfully"
