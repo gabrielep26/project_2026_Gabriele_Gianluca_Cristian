@@ -5,13 +5,11 @@ from app.models.user import User #import tabella (classe) User da database
 
 router = APIRouter(prefix="/users") #tutte api iniziano per /users
 
-#get /users
-@router.get("/") #quando arriva richiesta get /users esegui
-def get_all_users(session: SessionDep): #azione su database
+@router.get("/")
+def get_all_users(session: SessionDep):
     """Restituisce tutti gli utenti presenti nel database"""
     users = session.exec(select(User)).all() 
-    #query: select(User) prendi da tabella User all (tutti)
-    return users #fastapi converte gli oggetti python in JSON e manda al frontend
+    return users
 
 @router.post("/")
 def add_user(user: User, session: SessionDep):
@@ -59,5 +57,3 @@ def delete_single_user(username: str, session: SessionDep):
     session.delete(user)
     session.commit()
     return f"User {username} deleted!"
-
-
