@@ -49,3 +49,15 @@ def delete_all_users(session: SessionDep):
     session.exec(delete(User))
     session.commit()
     return "All users successfully deleted"
+
+@router.delete("/{username}")
+def delete_single_user(username: str, session: SessionDep):
+    """Elimina un singolo utente dal database"""
+    user = session.exec(select(User).where(User.username == username)).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    session.delete(user)
+    session.commit()
+    return f"User {username} deleted!"
+
+
