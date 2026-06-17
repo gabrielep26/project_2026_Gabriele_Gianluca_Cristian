@@ -23,7 +23,7 @@ def add_user(user: User, session: SessionDep):
     if existing_user: #è true
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, 
-            detail="Username già esistente"
+            detail="Username already existing"
         )
 
     # Se è None
@@ -42,3 +42,10 @@ def get_user(username: str, session: SessionDep):
         raise HTTPException(status_code=404, detail="User not found")
     #query: select(User) prendi da tabella User where username == username
     return session
+
+@router.delete("/")
+def delete_all_users(session: SessionDep):
+    """Elimina tutti gli utenti dal database"""
+    session.exec(delete(User))
+    session.commit()
+    return "All users successfully deleted"
