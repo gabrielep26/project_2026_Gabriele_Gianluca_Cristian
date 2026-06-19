@@ -22,13 +22,25 @@ def get_event(session : SessionDep, id: Annotated[int, Path(description="event i
         raise HTTPException(status_code=404, detail="Event not found")
     return session
 
-@router.put("/{id}")
-def update(session : SessionDep, event: EventCreate):
+@router.put("/{id}", response_model=Event)
+def update(session: SessionDep, id: int, event_data: EventCreate):
     """Endpoint to change an existing single event"""
-    events = session.exec(select(Event)).all()
-    if event.id not in events:
-        raise HTTPException(404, detail="No event found!")
-    events[event.id] = event
+    
+    db_event = session.get(Event, id)
+    if not db_event:
+        raise HTTPException(status_code=404, detail="No event found!")
+    
+    update_dict = event_data.model_dump(exclude_unset=True)
+    
+    for key, value in update_dict.items():
+        setattr(db_event, key, value)
+    
+    session.add(db_event)
+    session.commit()
+    
+    session.refresh(db_event)
+    
+    return db_event
     
     
 @router.post("/")
@@ -79,6 +91,8 @@ def register(session: SessionDep,
 @router.delete("/")
 def delete_all(session: SessionDep):
     """Endpoint to delete all the events"""
+    session.exec(delete(Registration))
+    session.flush()
     session.exec(delete(Event))
     session.commit()
     return "All events successfully deleted"
@@ -89,7 +103,11 @@ def delete_single(session: SessionDep, id: Annotated[int, Path(description="Id t
     event = session.get(Event, id)
     if not event:
         raise HTTPException(404, detail="Event non trovato")
-    session.delete(Event[id])
+    
+    command = delete(Registration).where(Registration.event_id == id)
+    session.exec(command)
+    session.flush()  
+    session.delete(event)
     session.commit()
     return f"Event {id} deleted!"
 
