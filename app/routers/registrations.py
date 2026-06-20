@@ -2,6 +2,7 @@ from fastapi import APIRouter
 from sqlmodel import select #query database
 from app.data.db import SessionDep #connessione al database
 from app.models.registration import Registration #import tabella (classe) Registration da database
+from fastapi import APIRouter, HTTPException
 
 router = APIRouter(prefix="/registrations") #tutte api iniziano per /registrations
 
