@@ -13,17 +13,17 @@ def get_all_users(session: SessionDep):
     users = session.exec(select(User)).all() 
     return users
 
-@router.post("/")
-def add_user(user: UserCreate, session: SessionDep):
-    """Aggiunge un nuovo utente al database"""
 
+
+#Function to create a user
+def create_user(user: UserCreate, session: SessionDep):
     # Controlliamo se esiste già un utente con lo stesso username
     existing_user = session.get(User, user.username)  # ricerca con chiave primaria
 
     if existing_user:  # è true
         raise HTTPException(
             status_code=400,
-            detail="Username already existing"
+            detail="Username already exists"
         )
 
     # Se è None
@@ -33,6 +33,14 @@ def add_user(user: UserCreate, session: SessionDep):
     session.commit()
     session.refresh(database_user)
     return database_user
+
+@router.post("/")
+def add_user(user: UserCreate, session: SessionDep):
+    """Aggiunge un nuovo utente al database"""
+
+    create_user(user,session)
+    return "User created successfully"
+
 
 @router.get("/{username}")
 def get_user(username: str, session: SessionDep):

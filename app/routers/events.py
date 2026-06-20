@@ -4,7 +4,7 @@ from app.data.db import SessionDep
 from app.models.event import Event, EventCreate
 from app.models.user import User, UserCreate
 from app.models.registration import Registration
-from app.routers.users import add_user
+from app.routers.users import create_user
 from typing import Annotated
 
 router = APIRouter(prefix="/events")
@@ -67,9 +67,9 @@ def register(session: SessionDep,
     user_in_db = session.get(User, user.username)
 
     if not user_in_db:
-        user_in_db =add_user(user,session)
+        user_in_db =create_user(user,session)
 
-    """We have to verify if the user is already registered"""
+    #We have to verify if the user is already registered
     user_registered = session.exec(
         select(Registration).where(
             Registration.username == user_in_db.username,
@@ -80,8 +80,10 @@ def register(session: SessionDep,
         new_registration = Registration(username=user_in_db.username, event_id=event.id)
         session.add(new_registration)
         session.commit()
+    else:
+       raise HTTPException(status_code=409, detail="User already registered")
 
-    return {"message": f"User {user_in_db.username} registered to the event"}
+    return f"User {user_in_db.username} registered to the event"
 
 
 @router.delete("/")
@@ -98,7 +100,7 @@ def delete_single(session: SessionDep, id: Annotated[int, Path(description="Id t
     """Endpoint to delete a single event"""
     event = session.get(Event, id)
     if not event:
-        raise HTTPException(404, detail="Event non trovato")
+        raise HTTPException(404, detail="Event not found")
     
     command = delete(Registration).where(Registration.event_id == id)
     session.exec(command)
